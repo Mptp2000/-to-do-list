@@ -4,37 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Tarefas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Lista de Tarefas</h1>
+    <div class="container">
+        <header>
+            <h1>Lista de Tarefas</h1>
+        </header>
+        
+        <main>
+            <h2>Adicionar nova tarefa:</h2>
+            <form action="{{ url_for('add_task') }}" method="POST">
+                <input type="text" name="title" placeholder="Nova tarefa" required>
+                <button type="submit" class="btn btn-primary">Adicionar</button>
+            </form>
 
-    <!-- Exibir Mensagens -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        <ul>
-            {% for category, message in messages %}
-            <li style="color: {% if category == 'error' %}red{% else %}green{% endif %};">
-                {{ message }}
-            </li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-    {% endwith %}
-
-    <!-- Formulário para adicionar tarefas --> 
-    <form action="{{ url_for('add_task') }}" method="POST">
-        <label for="title">Nova Tarefa</label>
-        <input type="text" name="title" id="title" required>
-        <button type="submit">Adicionar</button>
-    </form>
-
-    <!-- Lista de tarefas -->
-    <ul>
-        {% for task in tasks %}
-            <li>{{ task.title }}</li>
-        {% else %}
-            <li>Nenhuma tarefa encontrada.</li>
-        {% endfor %}
-    </ul>
+            <h2>Tarefas:</h2>
+            <ul class="task-list">
+                {% for task in tasks %}
+                    <li class="task-item">
+                        <span>{{ task.title }}</span>
+                        <form action="{{ url_for('delete_task', task_id=task.id) }}" method="POST" style="display:inline;">
+                            <button type="submit" class="btn btn-danger">Excluir</button>
+                        </form>
+                    </li>
+                {% else %}
+                    <li>Nenhuma tarefa encontrada.</li>
+                {% endfor %}
+            </ul>
+        </main>
+    </div>
 </body>
 </html>
