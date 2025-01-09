@@ -3,6 +3,7 @@ from database import db
 from models.Task import Task
 
 
+
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tasks.db'  # Certifique-se de que o nome do arquivo do banco de dados é 'tasks.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -45,6 +46,11 @@ def delete_task(task_id):
     else:
         flash('Tarefa não encontrada.', 'error')  # Caso não encontre a tarefa
     return redirect(url_for('index'))  # Redireciona para a página principal
+
+
+@app.route ('/login')
+def login():
+    return "<h1>Login </h1>"    
 
 
 if __name__ == '__main__':
