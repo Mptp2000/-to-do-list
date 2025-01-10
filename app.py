@@ -1,7 +1,7 @@
 from flask import Flask, render_template, redirect, request, url_for, flash
 from database import db
 from models.Task import Task
-
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 
 
 app = Flask(__name__)
@@ -10,6 +10,17 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'chavesecreta1'
 
 db.init_app(app)
+
+
+
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 # Criação das tabelas ao rodar a aplicação
 with app.app_context():
@@ -48,9 +59,34 @@ def delete_task(task_id):
     return redirect(url_for('index'))  # Redireciona para a página principal
 
 
-@app.route ('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    return "<h1>Login </h1>"    
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        user = User.query.filter_by(username=username).first()
+
+        if user and check_password_hash(user.password, password):
+            login_user(user)
+            return redirect(url_for('dashboard'))
+        else:
+            flash('Login inválido. Tente novamente.')
+    return render_template('login.html')
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
+
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    return f'Olá, {current_user.username}! Bem-vindo ao painel.'
+
+
+
+
 
 
 if __name__ == '__main__':
