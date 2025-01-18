@@ -28,12 +28,14 @@ with app.app_context():
 
 # Rota principal para exibir tarefas
 @app.route('/')
+@login_required
 def index():
     tasks = Task.query.all()  # Carrega todas as tarefas do banco
     return render_template('index.html', tasks=tasks)
 
 # Rota para adicionar uma nova tarefa
 @app.route('/add_task', methods=['POST'])
+@login_required
 def add_task():
     title = request.form.get('title')  # Obtém o título da tarefa
     if not title:
@@ -48,6 +50,7 @@ def add_task():
 
 # Rota para excluir uma tarefa
 @app.route('/delete/<int:task_id>', methods=['POST'])
+@login_required
 def delete_task(task_id):
     task = Task.query.get(task_id)  # Encontra a tarefa pelo ID
     if task:
@@ -60,6 +63,7 @@ def delete_task(task_id):
 
 
 @app.route('/login', methods=['GET', 'POST'])
+
 def login():
     if request.method == 'POST':
         username = request.form.get('username')
@@ -68,7 +72,7 @@ def login():
 
         if user and check_password_hash(user.password, password):
             login_user(user)
-            return redirect(url_for('dashboard'))
+            return redirect(url_for('index'))
         else:
             flash('Login inválido. Tente novamente.')
     return render_template('login.html')
@@ -79,10 +83,6 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
-@app.route('/dashboard')
-@login_required
-def dashboard():
-    return f'Olá, {current_user.username}! Bem-vindo ao painel.'
 
 
 
