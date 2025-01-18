@@ -14,6 +14,17 @@
         <input type="password" id="password" name="password" required>
         <button type="submit">Entrar</button>
     </form>
-    <p>Não tem uma conta? <a href="#">Registre-se</a></p>
+
+    <p>Não tem uma conta? <a href="register">Registre-se</a></p>
+
+
+    {% with messages = get_flashed_messages() %}
+   {% if messages %}
+      {% for message in messages %}
+         {{ message }}
+      {% endfor %}
+   {% endif %}
+{% endwith %}
+ 
 </body>
 </html>

@@ -1,7 +1,11 @@
 from flask import Flask, render_template, redirect, request, url_for, flash
-from database import db
+from db import db
 from models.Task import Task
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from models.User import User
+from werkzeug.security import generate_password_hash, check_password_hash
+
+
 
 
 app = Flask(__name__)
@@ -22,6 +26,9 @@ login_manager.login_view = 'login'
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+
+
+
 # Criação das tabelas ao rodar a aplicação
 with app.app_context():
     db.create_all()
@@ -32,6 +39,9 @@ with app.app_context():
 def index():
     tasks = Task.query.all()  # Carrega todas as tarefas do banco
     return render_template('index.html', tasks=tasks)
+
+
+
 
 # Rota para adicionar uma nova tarefa
 @app.route('/add_task', methods=['POST'])
@@ -48,6 +58,9 @@ def add_task():
     flash('Tarefa adicionada com sucesso!', 'success')  # Exibe uma mensagem de sucesso
     return redirect(url_for('index'))  # Redireciona para a página principal
 
+
+
+
 # Rota para excluir uma tarefa
 @app.route('/delete/<int:task_id>', methods=['POST'])
 @login_required
@@ -62,7 +75,12 @@ def delete_task(task_id):
     return redirect(url_for('index'))  # Redireciona para a página principal
 
 
+
+
+
+
 @app.route('/login', methods=['GET', 'POST'])
+
 
 def login():
     if request.method == 'POST':
@@ -74,8 +92,11 @@ def login():
             login_user(user)
             return redirect(url_for('index'))
         else:
-            flash('Login inválido. Tente novamente.')
+         flash('Login inválido. Tente novamente.')
     return render_template('login.html')
+
+
+
 
 @app.route('/logout')
 @login_required
@@ -86,8 +107,35 @@ def logout():
 
 
 
+from werkzeug.security import generate_password_hash
 
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'GET':
+        return render_template('register.html')
+    elif request.method == 'POST':
+        # Obtém os dados do formulário
+        name = request.form['name']
+        login = request.form['login']
+        email = request.form['email']
+        password = request.form['password']
+        password_confirm = request.form['password_confirm']
+        
+        # Verificar se as senhas coincidem
+        if password != password_confirm:
+            flash('As senhas não coincidem.', 'error')
+            return redirect(url_for('register'))
+        
+        # Gerar o hash da senha
+        hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
 
+        # Criar e adicionar o usuário ao banco de dados
+        new_user = User(username=login, password=hashed_password)
+        db.session.add(new_user)
+        db.session.commit()
+
+        flash('Usuário cadastrado com sucesso!', 'success')
+        return redirect(url_for('login'))
 
 if __name__ == '__main__':
     app.run(debug=True)

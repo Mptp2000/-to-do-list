@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastre-se</title>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Cadastre-se</h1>
+        </header>
+        
+        <main>
+            <form action="{{ url_for('register') }}" method="POST">
+                <div>
+                    <label for="name">Nome completo</label>
+                    <input type="text" id="name" name="name" placeholder="Escreva seu nome" required>
+                </div>
+              
+                <div>
+                    <label for="login">Login</label>
+                    <input type="text" id="login" name="login" placeholder="Escreva seu Login" required>
+                </div>
+                
+                <div>
+                    <label type="text" name="email">E-mail</label>
+                    <input type="text" name="email" placeholder="Escreva seu E-mail" required>
+                </div>
+                
+                <div>
+                    <label for="password">Senha</label>
+                    <input type="password" id="password" name="password" placeholder="Escreva sua senha" required>
+                </div>
+                
+                <div>
+                    <label for="password_confirm">Confirme sua senha</label>
+                    <input type="password" id="password_confirm" name="password_confirm" placeholder="Confirme sua senha" required>
+                </div>
+                
+                <br>
+                <br>
+                <button type="submit">Cadastrar</button>
+            </form>
+        </main>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+</body>
+</html>
